@@ -21,6 +21,17 @@ public class CodebreakerGUI {
 
         generateSecretCode();
 
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         JFrame frame = new JFrame("Codebreaker");
         frame.setSize(400, 300);
         Dimension minimumDimension = new Dimension(300,200);
@@ -30,6 +41,11 @@ public class CodebreakerGUI {
         frame.setLayout(new BorderLayout());
 
         JLabel display = new JLabel("----");
+        display.setFont(new Font("Verdana", Font.BOLD, 14));
+        display.setBorder(BorderFactory.createLineBorder(Color.white, 1, true));
+        display.setOpaque(true);
+        display.setBackground(Color.white);
+        display.setForeground(Color.darkGray);
         display.setHorizontalAlignment(SwingConstants.CENTER);
         display.setVerticalAlignment(SwingConstants.CENTER);
         Font currentFont = display.getFont();
@@ -49,23 +65,35 @@ public class CodebreakerGUI {
 
         JLabel attemptsLabel = new JLabel("Attempts: " + (MAX_ATTEMPTS - attempts));
         attemptsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        attemptsLabel.setVerticalAlignment(SwingConstants.CENTER);
+        attemptsLabel.setOpaque(true);
+        attemptsLabel.setBackground(Color.white);
+        attemptsLabel.setBorder(BorderFactory.createLineBorder(Color.white, 1, true));
+        attemptsLabel.setFont(new Font("Verdana", Font.BOLD,14));
+        attemptsLabel.setForeground(Color.darkGray);
         buttonPanel1.add(attemptsLabel);
         addButton(buttonPanel1, display, "0");
 
 
         JButton backspaceButton = new JButton("<---");
+        backspaceButton.setFont(new Font("Verdana", Font.BOLD, 14));
+        backspaceButton.setForeground(Color.darkGray);
+        //backspaceButton.setBackground(Color.yellow);
         backspaceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (input.length() > 0) {
                     input.deleteCharAt(input.length() - 1);
                     display.setText(input.toString());
+                    if (input.length() == 0) display.setText("----");
                 }
             }
         });
         buttonPanel1.add(backspaceButton);
 
         JButton confirm = new JButton("Confirm");
+        confirm.setFont(new Font("Verdana", Font.BOLD, 14));
+        confirm.setForeground(Color.darkGray);
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -121,10 +149,13 @@ public class CodebreakerGUI {
         frame.add(buttonPanel1, BorderLayout.CENTER);
         frame.add(confirm, BorderLayout.SOUTH);
         frame.setVisible(true);
+
     }
 
     private static void addButton(JPanel panel, JLabel display, String text) {
         JButton button = new JButton(text);
+        button.setForeground(Color.darkGray);
+        button.setFont(new Font("Verdana", Font.BOLD,14));
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
