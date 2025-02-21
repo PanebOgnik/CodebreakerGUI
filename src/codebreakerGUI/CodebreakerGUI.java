@@ -2,12 +2,11 @@ package codebreakerGUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Random;
-import javazoom.jl.decoder.JavaLayerException;
+
 import javazoom.jl.player.Player;
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -15,30 +14,46 @@ public class CodebreakerGUI {
     private static StringBuilder secretCode = new StringBuilder();
     private static StringBuilder input = new StringBuilder();
     private static int attempts = 0;
-    private static final int MAX_ATTEMPTS = 10;
+    private static int MAX_ATTEMPTS = 10 ;
 
     public static void main(String[] args) {
 
         generateSecretCode();
 
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Outfit.useOutfit();
 
         JFrame frame = new JFrame("Codebreaker");
         frame.setSize(400, 300);
-        Dimension minimumDimension = new Dimension(300,200);
+        Dimension minimumDimension = new Dimension(400,300);
         frame.setMinimumSize(minimumDimension);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenu settingsMenu = new JMenu("Settings");
+        JMenu helpMenu = new JMenu("Help");
+
+        JMenuItem newItem = new JMenuItem("New game");
+        JMenuItem exitItem = new JMenuItem("Exit");
+        JMenuItem easyItem = new JMenuItem("Easy");
+        JMenuItem mediumItem = new JMenuItem("Medium");
+        JMenuItem hardItem = new JMenuItem("Hard");
+        JMenuItem helpItem = new JMenuItem("Hints");
+
+        fileMenu.add(newItem);
+        fileMenu.add(exitItem);
+        settingsMenu.add(easyItem);
+        settingsMenu.add(mediumItem);
+        settingsMenu.add(hardItem);
+        helpMenu.add(helpItem);
+
+        menuBar.add(fileMenu);
+        menuBar.add(settingsMenu);
+        menuBar.add(helpMenu);
+
+        frame.setJMenuBar(menuBar);
 
         JLabel display = new JLabel("----");
         display.setFont(new Font("Verdana", Font.BOLD, 14));
@@ -104,12 +119,12 @@ public class CodebreakerGUI {
                     attemptsLabel.setText("Attempts: " + (MAX_ATTEMPTS - attempts));
                     if (MAX_ATTEMPTS- attempts <= 3){
                         attemptsLabel.setOpaque(true);
-                        attemptsLabel.setBackground(Color.red);
+                        attemptsLabel.setForeground(Color.red);
                     }
 
                     if (feedback.equals("XXXX")) {
                         display.setOpaque(true);
-                        display.setBackground(Color.green);
+                        display.setForeground(new Color(63,193,0));
                         try {
                             InputStream inputStream = CodebreakerGUI.class.getResourceAsStream("/door.mp3");
                             if (inputStream == null) {
@@ -124,7 +139,7 @@ public class CodebreakerGUI {
                         resetGame(attemptsLabel, display);
                     } else if (attempts >= MAX_ATTEMPTS) {
                         display.setOpaque(true);
-                        display.setBackground(Color.red);
+                        display.setForeground(Color.red);
                         try {
                             InputStream inputStream = CodebreakerGUI.class.getResourceAsStream("/alert.mp3");
                             if (inputStream == null) {
@@ -144,6 +159,114 @@ public class CodebreakerGUI {
                 }
             }
         });
+
+        newItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to abort the current game?", "New game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    resetGame(attemptsLabel,display);
+                }
+
+            }
+        });
+
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to exit the game?","Exit game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    System.exit(0);
+                }
+            }
+        });
+
+        easyItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to abort the current game?", "New game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    resetGame(attemptsLabel,display);
+                    MAX_ATTEMPTS = 10;
+                    attemptsLabel.setText("Attempts: " + (MAX_ATTEMPTS - attempts));
+                }
+
+            }
+        });
+
+        mediumItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to abort the current game?", "Abort game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    resetGame(attemptsLabel,display);
+                    MAX_ATTEMPTS = 8;
+                    attemptsLabel.setText("Attempts: " + (MAX_ATTEMPTS - attempts));
+                }
+            }
+        });
+
+        hardItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to abort the current game?", "New game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    resetGame(attemptsLabel,display);
+                    MAX_ATTEMPTS = 6;
+                    attemptsLabel.setText("Attempts: " + (MAX_ATTEMPTS - attempts));
+                }
+            }
+        });
+
+        helpItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Help.showHelp();
+            }
+        });
+
+        frame.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame,"Are you sure you want to exit the game?","Exit game",0);
+                if (choice == JOptionPane.YES_OPTION){
+                    System.exit(0);
+                }
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+
+        frame.getRootPane().setDefaultButton(confirm);
 
         frame.add(displayPanel, BorderLayout.NORTH);
         frame.add(buttonPanel1, BorderLayout.CENTER);
@@ -181,9 +304,10 @@ public class CodebreakerGUI {
         input.setLength(0);
         attempts = 0;
         display.setOpaque(true);
-        display.setBackground(Color.white);
+        display.setForeground(Color.darkGray);
+        display.setText("----");
         attemptsLabel.setOpaque(true);
-        attemptsLabel.setBackground(Color.white);
+        attemptsLabel.setForeground(Color.darkGray);
         attemptsLabel.setText("Attempts: " + (MAX_ATTEMPTS - attempts));
     }
 }
